@@ -12,7 +12,7 @@ You will then load it in Lua like so:
 
 <h1>Functions</h1>
 
-<h2>timerlib.Create(resolution)</h2>
+<h2>timerlib.create(resolution)</h2>
 
 
 Creates and returns a `TimerLibTimer`. The timer is not running when created.
@@ -21,8 +21,8 @@ Creates and returns a `TimerLibTimer`. The timer is not running when created.
 
 Examples:
 
-    timerlib.Create(1) -- Creates a timer that rounds to one decimal place, e.g., 2.2. 
-    timerlib.Create(3) -- Creates a timer that rounds to three decimal places, e.g., 2.203. 
+    timerlib.create(1) -- Creates a timer that rounds to one decimal place, e.g., 2.2. 
+    timerlib.create(3) -- Creates a timer that rounds to three decimal places, e.g., 2.203. 
 
 <h2>timerlib.start(timer)</h2>
 
