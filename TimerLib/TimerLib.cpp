@@ -1,18 +1,16 @@
-// TimerLib.cpp : Defines the exported functions for the DLL application.
-//
-
 #include "stdafx.h"
 #include "TimerLib.h"
-
+#include <cmath>
 
 extern "C" {
 
 	typedef struct TimerLibTimer {
 		__int64 last;
-		double freq;
+		int prec;
 		LARGE_INTEGER tint;
 		bool running;
 		double total;
+		double freq;
 	} TimerLibTimer;
 
 	static int __index(lua_State *L) {
@@ -31,14 +29,18 @@ extern "C" {
 	}
 
 	static int create(lua_State *L) {
-		double freq = luaL_checknumber(L, 1);
+		int prec = luaL_checkinteger(L, 1);
+		if (prec < 1) {
+			luaL_error(L, "TimerLib.Create expected a positive non-zero integer for argument #1!");
+		}
 		TimerLibTimer* timer = (TimerLibTimer*)lua_newuserdata(L, sizeof(TimerLibTimer));
 		memset(timer, 0, sizeof(TimerLibTimer));
 		set_timer_metatable(L, -1);
 		if (!QueryPerformanceFrequency(&(timer->tint))) {
 			luaL_error(L, "Counter creation failed: QueryPerformanceFrequency failed!");
 		};
-		timer->freq = double(timer->tint.QuadPart) / freq;
+		timer->freq = double(timer->tint.QuadPart);
+		timer->prec = prec;
 		timer->running = false;
 		return 1;
 	}
@@ -52,10 +54,18 @@ extern "C" {
 		return 0;
 	}
 
+	static double round_place(double n, int prec) {
+		double power = pow(10, prec);
+		double res = power * n;
+		res = floor(res);
+		res = res / power;
+		return res;
+	}
+
 	static void update_timer(TimerLibTimer* timer) {
 		if (timer->running) {
 			QueryPerformanceCounter(&(timer->tint));
-			double res = double(timer->tint.QuadPart - timer->last) / timer->freq;
+			double res = round_place(double(timer->tint.QuadPart - timer->last)/timer->freq, timer->prec);
 			timer->total = timer->total + res;
 			timer->last = timer->tint.QuadPart;
 		};
