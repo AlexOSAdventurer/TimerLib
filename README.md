@@ -53,4 +53,5 @@ Can also be invoked via:
 Returns the total time elapsed for a specific timer in seconds and rounded to the precision set in `timerlib.Create`.
 
 Can also be invoked via:
+
     timer:getcount()
